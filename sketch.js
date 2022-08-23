@@ -10,6 +10,10 @@ let totalDays = 1;
 let daysLeft = 1;
 let stepSize = 5;
 let maxSLA = 5;
+let DBChange = 0;
+let MaxDBChange = 5;
+let transferCount = 0;
+let showTransfer = 1;
 
 // grph vars start
 let showGraph = 1;
@@ -25,8 +29,10 @@ let Bliq = 50;
 // ledger vars start
 let Lliq = 500;
 // ledger vars end
-
+var posX = 0;
 // Algo for volatility
+
+
 
 
 function Inc100(val) {
@@ -39,50 +45,50 @@ function Dec100(val) {
 
 function rand5(val) {
   let extra =int(random(-5, 5));
-  console.log("rand5", extra);
+  //console.log("rand5", extra);
   return val + extra;
 }
 
 function rand7(val) {
   let extra = int(random(-7, 7));
-  console.log("rand7", extra);
+  //console.log("rand7", extra);
   return val + extra;
 }
 
 function buyExtra(val) {
   let extra = int(random(-8, 12));
-  console.log("buyExtra", extra);
+  //console.log("buyExtra", extra);
   return val + extra;
 }
 
 function buyExtra1(val) {
   let extra = int(random(-4, 16));
-  console.log("buyExtra1", extra);
+  //console.log("buyExtra1", extra);
   return val + extra;
 }
 
 function sellExtra(val) {
    extra = int(random(-12, 8))
-   console.log("sellExtra", extra);
+   //console.log("sellExtra", extra);
    return val + extra;
 }
 
 function wtfShib(val) {
   extra = int(random(-12, 12));
-  console.log("wtfShib", extra);
+  //console.log("wtfShib", extra);
   return val + extra;
 }
 
 function randGaus(val) {
   c = sin(f*0.008);
   let extra = int(map(noise(f*0.09), 0, 1, -8, 8));
-  console.log("randGaus", extra);
+  //console.log("randGaus", extra);
   return val + extra;
 }
 
 function harmonic(val) {
   let extra = int(42 * cos(TWO_PI * noise(frameCount*0.02) *frameCount / 17)/2.7);
-  console.log("harmonic", extra);
+  //console.log("harmonic", extra);
   return val + extra;
 }
 
@@ -92,13 +98,54 @@ function algoChooser(val) {
   return newAlgoArr[0](val);
 }
 
+var news = [
+  "Elon musk buys DOGE", 
+  "Binance maintenance scheduled", 
+  "Ledger maintenance scheduled", 
+  "Engineers deploy broken code(unscheduled maintenance)",
+  "Eth merge will market super volatile"
+];
+
+var newsIndex = 0;
+var newsX = 0;
+var showNews = 0;
+
+function toggleNews() {
+  showNews = !showNews;
+}
+
+function toggleTransfers() {
+  showTransfer = !showTransfer;
+  if (showTransfer) {
+    B2L.removeAttribute('disabled');
+    L2B.removeAttribute('disabled');
+  } else {
+    B2L.attribute('disabled', '');
+    L2B.attribute('disabled', '');
+  }
+}
+
+function changeNews(val) {
+  newsIndex = val;
+  if (newsIndex==0) {
+    algo = buyExtra;
+  } else if (newsIndex==1 || newsIndex==2 || newsIndex==3) {
+    algo = sellExtra;
+  } else {
+    algo = wtfShib;
+  }
+  
+}
+
 let algo = randGaus;
 
 function keyPressed() {
   if (keyCode === UP_ARROW) {
-    algo = buyExtra1;
+    transferAmount = transferAmount+1;
   } else if (keyCode === DOWN_ARROW) {
-    algo = sellExtra;
+    transferAmount = transferAmount-1;
+  } else if (keyCode === 13) {
+    DBChange = DBChange+1;
   } else if (keyCode === LEFT_ARROW) {
     algo = wtfShib;
   }
@@ -120,9 +167,28 @@ function keyPressed() {
   else if (keyCode === 54) {
     algo = harmonic;
   }
-  else {
-    algo = algoChooser
+  else if (keyCode === 90) {
+    changeNews(0);
   }
+  else if (keyCode === 88) {
+    changeNews(1);
+  }
+  else if (keyCode === 67) {
+    changeNews(2);
+  }
+  else if (keyCode === 86) {
+    changeNews(3);
+  }
+  else if (keyCode === 66) {
+    changeNews(4);
+  }
+  else if (keyCode === 78) {
+    toggleNews();
+  }
+  else if (keyCode === 77) {
+    toggleTransfers();
+  }
+  
   console.log(algo);
 }
 
@@ -131,42 +197,48 @@ function keyPressed() {
 
 function preload() {
   bg = loadImage(
-    "https://i.ibb.co/QcXfBSH/Screenshot-2022-08-23-at-9-04-18-AM.png"
+    "https://i.ibb.co/QCQ9TF0/Screenshot-2022-08-23-at-5-10-08-PM.png"
   );
   sadSaunhita = loadImage(
     "https://i.ibb.co/Nyz96Kj/sad-saunhita-removebg-preview-1.png"
   );
-  happyRudraksh = loadImage(
-    "https://i.ibb.co/QvybMZ5/happy-rudraksh-removebg-preview.png"
+  happySaunhita = loadImage(
+    "https://i.ibb.co/Kr4Z05y/Screenshot-2022-08-23-at-2-43-48-PM-removebg-preview.png"
   );
 }
 
 function setup() {
-  createCanvas(1500, 850);
+  createCanvas(1500, 950);
+  
 
   if (level == "easy") {
-    daysLeft = 30;
-    stepSize = 20;
+    daysLeft = 15;
+    stepSize = 12;
   } else if (level == "medium") {
-    daysLeft = 3;
-    stepSize = 10;
+    daysLeft = 17;
+    stepSize = 15;
+    minA = 10;
+    maxA = 60;
   } else {
-    daysLeft = 4;
+    daysLeft = 20;
     stepSize = 20;
+    minA = 5;
+    maxA = 50;
   }
   totalDays = daysLeft;
+  transferAmount = int(random(minA, maxA));
   
   
   if (showGraph == 1) {
     
-        const time = daysLeft * stepSize; // number of x tick values
+    const time = daysLeft * stepSize; // number of x tick values
     const step = W/time; // time step
     // array containing the x positions of the line graph, scaled to fit the canvas
-  posx = Float32Array.from({ length: time }, (_, i) => map(i, 0, time, 50, W+50));
+    posx = Float32Array.from({ length: time }, (_, i) => map(i, 0, time, 50, W+50));
   
-  // function to map the number of infected people to a specific height (here the height of the canvas)
-  fy = _ => map(_, 0, 100, H, H/2);
-  Cliq = Bliq;
+    // function to map the number of infected people to a specific height (here the height of the canvas)
+    fy = _ => map(_, 0, 130, H-50, (H/2) );
+    Cliq = Bliq;
 
   }
   
@@ -177,12 +249,14 @@ function changeL2B() {
   let amount = transferAmount;
   Lliq = Lliq - amount;
   Cliq = Cliq + amount;
+  transferCount = transferCount + 1;
 }
 
 function changeB2L() {
   let amount = transferAmount;
   Cliq = Cliq - amount;
   Lliq = Lliq + amount;
+  transferCount = transferCount + 1;
 }
 
 function draw() {
@@ -238,7 +312,7 @@ function draw() {
       x2 = posx[i+1];
 
       // vertical lines (x-values)
-      strokeWeight(0.2);
+      strokeWeight(1);
 
       if (data[i+1] > minA && data[i+1] < maxA) {
           stroke('green');
@@ -247,8 +321,7 @@ function draw() {
       }
 
       line(x1, H, x1, y1 + 2);
-      stroke(0);
-
+      
       // polyline
       strokeWeight(2);
       line(x1, y1, x2, y2);
@@ -262,7 +335,7 @@ function draw() {
     
   }
 
-  if (daysLeft > 0) {
+  if (daysLeft >= 0) {
     textSize(20);
     text("Mode: " + level, width / 15, height * 0.7/ 10);
     text("Days left: " + daysLeft, width / 15, height / 10);
@@ -273,32 +346,42 @@ function draw() {
     text("Binance:" + Cliq, width * 3/ 15, height / 10);
     fill('white');
     text("Ledger:" + Lliq, width * 3/ 15, height *1.3/ 10);
-    text("Min: "+minA+", Max: " + maxA, width * 5/ 15, height / 10);
-    text("Days with SLA breach: "+totalSLABreached +"/" + maxSLA, width * 5/ 15, height * 1.3 / 10);
+    text("Min: "+minA+", Max: " + maxA, width * 5/ 15, height * 0.7/ 10);
+    text("Days with SLA breach: "+totalSLABreached +"/" + maxSLA, width * 5/ 15, height * 1 / 10);
+    text("DB change request: "+DBChange +"/" + MaxDBChange, width * 5/ 15, height * 1.3 / 10);
+    text("Transfer count: "+transferCount, width * 5/ 15, height * 1.6 / 10);
   
-  B2L = createButton('Transfer out');
-  B2L.position(width / 15, height*2 / 10);
-  B2L.mousePressed(changeB2L);
-  B2L.addClass('btn btn-danger');
+    B2L = createButton('Transfer out');
+    B2L.position(width / 15, height*2 / 10);
+    B2L.mousePressed(changeB2L);
+    B2L.addClass('btn btn-danger');
+    
+    text("Transfer amount: "+transferAmount, width * 2.6/ 15, height *2.2/ 10);
 
+
+    L2B = createButton('Transfer in');
+    L2B.position(width * 5/15, height*2 / 10);
+    L2B.mousePressed(changeL2B);
+    L2B.addClass('btn btn-success');
     
-  // transferAmount = createInput();
-  // transferAmount.position(width *3/ 15, height*2 / 10);
-    
-  L2B = createButton('Transfer in');
-  L2B.position(width * 5/15, height*2 / 10);
-  L2B.mousePressed(changeL2B);
-  L2B.addClass('btn btn-success');
+    if (newsX > width*0.4) {
+      newsX = 0;
+    }
+    if (showNews) {
+      text("TOP NEWS: \n" + news[newsIndex], newsX++, 650);
+    }
+
 
   }
 
   if (gameOver == 1) {
     textFont("Comic Sans MS");
-    text("GAME OVER", width * 0.3, height * 0.4);
+    text("GAME OVER", width * 0.47, height * 0.4);
     if (lost == 1) {
-      image(sadSaunhita, width * 0.2, height * 0.45);
+      image(sadSaunhita, width * 0.45, height * 0.45);
     } else {
-      image(happyRudraksh, width * 0.2, height * 0.45);
+      image(happySaunhita, width * 0.45, height * 0.45);
     }
+    // noLoop();
   }
 }
