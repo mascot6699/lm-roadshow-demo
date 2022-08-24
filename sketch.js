@@ -74,7 +74,7 @@ function sellExtra(val) {
 }
 
 function wtfShib(val) {
-  extra = int(random(-12, 12));
+  extra = int(random(-13, -8));
   //console.log("wtfShib", extra);
   return val + extra;
 }
