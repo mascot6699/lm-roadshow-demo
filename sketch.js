@@ -230,8 +230,8 @@ function loadLevel() {
 function setup() {
   createCanvas(1500, 950);
   let levelArr = ['easy', 'medium', 'hard'];
-  let levelArr = shuffle(levelArr);
-  level = levelArr[0];
+  let newlevelArr = shuffle(levelArr);
+  level = newlevelArr[0];
   loadLevel();
   transferAmount = int(random(minA, maxA));
 
