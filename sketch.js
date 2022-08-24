@@ -36,11 +36,11 @@ var posX = 0;
 
 
 function Inc100(val) {
-  return val + 1;
+  return val + 3;
 }
 
 function Dec100(val) {
-  return val - 1;
+  return val - 4;
 }
 
 function rand5(val) {
@@ -167,6 +167,9 @@ function keyPressed() {
   else if (keyCode === 54) {
     algo = harmonic;
   }
+  else if (keyCode === 55) {
+    algo = buyExtra1;
+  }
   else if (keyCode === 90) {
     changeNews(0);
   }
@@ -207,11 +210,8 @@ function preload() {
   );
 }
 
-function setup() {
-  createCanvas(1500, 950);
-  
-
-  if (level == "easy") {
+function loadLevel() {
+    if (level == "easy") {
     daysLeft = 15;
     stepSize = 12;
   } else if (level == "medium") {
@@ -225,8 +225,17 @@ function setup() {
     minA = 5;
     maxA = 50;
   }
-  totalDays = daysLeft;
+}
+
+function setup() {
+  createCanvas(1500, 950);
+  let levelArr = ['easy', 'medium', 'hard'];
+  let levelArr = shuffle(levelArr);
+  level = levelArr[0];
+  loadLevel();
   transferAmount = int(random(minA, maxA));
+
+  totalDays = daysLeft;
   
   
   if (showGraph == 1) {
