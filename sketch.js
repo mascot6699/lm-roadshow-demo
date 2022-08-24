@@ -197,7 +197,7 @@ function keyPressed() {
 
 function preload() {
   bg = loadImage(
-    "https://i.ibb.co/QCQ9TF0/Screenshot-2022-08-23-at-5-10-08-PM.png"
+    "https://i.ibb.co/KqZrKLH/Screenshot-2022-08-24-at-9-39-45-AM.png"
   );
   sadSaunhita = loadImage(
     "https://i.ibb.co/Nyz96Kj/sad-saunhita-removebg-preview-1.png"
